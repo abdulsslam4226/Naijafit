@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NaijaFit Interactive Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#012d1d',
+                        'primary-container': '#1b4332',
+                        secondary: '#a04100',
+                        'secondary-container': '#fd7729',
+                        tertiary: '#725c00',
+                        background: '#fbf9f4',
+                    }
+                }
+            }
+        }
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+            
+            // Update active state in bottom nav
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('text-secondary', 'font-black'));
+            const activeBtn = document.querySelectorAll(`[onclick="showPage('${pageId}')"]`);
+            activeBtn.forEach(btn => btn.classList.add('text-secondary', 'font-black'));
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const isDark = document.documentElement.classList.contains('dark');
+            document.querySelectorAll('.theme-icon-sun').forEach(el => el.style.display = isDark ? 'none' : 'block');
+            document.querySelectorAll('.theme-icon-moon').forEach(el => el.style.display = isDark ? 'block' : 'none');
+        }
+
+        function toggleMarketList(show) {
+            const modal = document.getElementById('market-modal');
+            if (show) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function showToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-emerald-900 text-white px-6 py-3 rounded-full shadow-2xl text-sm font-bold opacity-0 translate-y-4 transition-all duration-300 border border-emerald-700/50 flex items-center gap-2';
+            toast.innerHTML = `<span class="material-symbols-outlined text-emerald-400 text-sm">check_circle</span> ${message}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.remove('opacity-0', 'translate-y-4'), 10);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', '-translate-y-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+            updateThemeIcons();
+            
+            gsap.registerPlugin(ScrollTrigger);
+            
+            // Cinematic Reveal Animation with Repeat (4 times in 1 min)
+            const introTl = gsap.timeline({ repeat: 3, repeatDelay: 10 });
+            introTl.fromTo(".hero-title-1", 
+                { y: 100, opacity: 0, scale: 0.8, filter: "blur(20px)" },
+                { duration: 1.8, y: 0, opacity: 1, scale: 1, filter: "blur(0px)", ease: "expo.out" }
+            )
+            .fromTo(".hero-title-2", 
+                { clipPath: "inset(0 100% 0 0)" },
+                { duration: 1.4, clipPath: "inset(0 0% 0 0)", ease: "power4.inOut" },
+                "-=1.0"
+            )
+            .to([".hero-title-1", ".hero-title-2"], { duration: 1, opacity: 0, y: -20, delay: 5 });
+            
+            // 3D Card Hover Logic
+            const card = document.querySelector('.premium-depth-card');
+            if (card) {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                    
+                    const xPercent = (x / rect.width - 0.5) * 20;
+                    const yPercent = (y / rect.height - 0.5) * -20;
+                    
+                    gsap.to('.mockup-inner', { rotationY: xPercent, rotationX: yPercent, duration: 1.2, ease: "power3.out" });
+                });
+            }
+        });
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fbf9f4; transition: background-color 0.5s ease, color 0.5s ease; }
+        h1, h2, h3, h4 { font-family: 'Lexend', sans-serif; }
+        .organic-gradient { background: linear-gradient(135deg, #012d1d 0%, #1b4332 100%); }
+        .warm-glow { box-shadow: 0 10px 40px -10px rgba(160, 65, 0, 0.2); }
+        .whiteboard-shadow { box-shadow: 0 4px 20px -2px rgba(27, 67, 50, 0.05); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Dark Mode Global Overrides */
+        html.dark body { background-color: #001510; color: #f1f5f9; }
+        html.dark .bg-white { background-color: #012d1d !important; color: #f1f5f9; }
+        html.dark .bg-slate-50 { background-color: #000c09 !important; }
+        html.dark .text-primary { color: #ffffff !important; }
+        html.dark .text-slate-600 { color: #94a3b8 !important; }
+        html.dark .border-emerald-50 { border-color: #064e3b !important; }
+        html.dark .bg-slate-100 { background-color: #064e3b !important; }
+        html.dark .bg-emerald-950 { background-color: #000000 !important; }
+        html.dark .bg-background { background-color: #001510 !important; }
+
+        .premium-depth-card {
+            background: linear-gradient(145deg, #012d1d 0%, #000000 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        html.dark .premium-depth-card {
+            background: linear-gradient(145deg, #064e3b 0%, #000000 100%);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
+        }
+        .card-sheen {
+            position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.1) 0%, transparent 40%);
+        }
+        .text-silver-matte {
+            background: linear-gradient(180deg, #FFFFFF 0%, #A1A1AA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="text-slate-900 overflow-x-hidden">
+    <div id="toast-container" class="fixed top-24 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- LANDING PAGE -->
+    <div id="landing" class="page">
+        <nav class="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-emerald-50 h-20 flex items-center px-6 justify-between">
+            <div class="text-2xl font-extrabold text-primary">NaijaFit</div>
+            <div class="hidden md:flex gap-8 font-medium">
+                <a href="#" onclick="showToast('Features section coming soon')" class="text-secondary border-b-2 border-secondary cursor-pointer">Features</a>
+                <a href="#" onclick="showPage('nutrition')" class="hover:text-secondary transition-colors cursor-pointer">Nutrition</a>
+                <a href="#" onclick="showPage('pro')" class="hover:text-secondary transition-colors cursor-pointer">Pricing</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-primary dark:text-white transition-all active:scale-95">
+                    <span class="material-symbols-outlined theme-icon-sun">light_mode</span>
+                    <span class="material-symbols-outlined theme-icon-moon" style="display:none">dark_mode</span>
+                </button>
+                <button onclick="showPage('tracker')" class="bg-secondary text-white px-6 py-2 rounded-full font-bold active:scale-95 transition-transform">Get Started</button>
+            </div>
+        </nav>
+
+        <section class="pt-32 pb-20 px-6 bg-slate-50 dark:bg-emerald-950/20 overflow-hidden">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12">
+                <div class="flex-1">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-900 dark:text-emerald-100 mb-6 text-sm font-bold">
+                        <span class="material-symbols-outlined text-lg">auto_awesome</span>
+                        The African-first fitness guide.
+                    </div>
+                    <h1 class="hero-title-1 text-5xl md:text-7xl font-bold text-primary dark:text-white mb-6 leading-tight">
+                        No Shame, <br><span class="hero-title-2 text-secondary inline-block">Just Progress.</span>
+                    </h1>
+                    <p class="text-lg text-slate-600 dark:text-emerald-100/60 mb-10 max-w-xl">
+                        Experience a fitness journey that respects your culture, your food, and your schedule. From Jollof-friendly macros to 5-minute bed stretches.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button onclick="showPage('tracker')" class="bg-secondary text-white px-10 py-5 rounded-full font-bold shadow-xl hover:scale-105 transition-transform">Start Your Journey</button>
+                        <button onclick="showPage('pro')" class="border-2 border-primary dark:border-white text-primary dark:text-white px-10 py-5 rounded-full font-bold hover:bg-primary dark:hover:bg-white hover:text-white dark:hover:text-primary transition-all">Explore Plans</button>
+                    </div>
+                </div>
+                <div class="flex-1 relative perspective-1000">
+                    <div class="premium-depth-card mockup-inner rounded-[40px] shadow-2xl p-4 transition-transform duration-200">
+                        <div class="card-sheen"></div>
+                        <div class="relative w-full aspect-[4/5] rounded-[32px] overflow-hidden">
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMacvYe9-adSiBfjJIgBs3AjCsJqpnl5gDRoZ-WyYGWSlUlw_9tJuggYdgdmoLkUbb5tYx5iHFspc2LYQ49SQ9Q4rnv6DOodlCJ_cJ5u1iiegBXHuKRnTrretE5VuzkZAT-2drRJDcETff7kaFANVU_a-YtSiFZGWG5pSCu9kG0qfWISq93DR_YlncI7z1lO_CROxrjOBwMPoKBxeM4YrNlRZr2B7mrKzoj6jUvZw1TR-OYOhgbEmyBTC-JbaN4f50jMnmpq1q7ky9" class="object-cover w-full h-full opacity-80">
+                        </div>
+                        <div class="mt-6 text-center">
+                            <h3 class="text-silver-matte text-2xl font-bold tracking-tight">Consistency Redefined</h3>
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 bg-white dark:bg-emerald-900 p-6 rounded-3xl shadow-xl border border-emerald-50 dark:border-emerald-800 z-20">
+                        <p class="text-sm font-bold text-slate-400 dark:text-emerald-100/40 uppercase tracking-widest mb-1">Join over</p>
+                        <p class="text-3xl font-black text-primary dark:text-white">50,000+</p>
+                        <p class="text-sm font-medium text-emerald-800 dark:text-emerald-100">Nigerians moving daily</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bento Grid -->
+        <section class="py-24 px-6 max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold text-primary dark:text-white mb-12 text-center">Crafted for Your Reality</h2>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-8 bg-emerald-950 dark:bg-black text-white rounded-[32px] p-10 relative overflow-hidden group border border-white/5">
+                    <div class="relative z-10 max-w-md">
+                        <h3 class="text-3xl font-bold mb-4">Find Your Path</h3>
+                        <p class="text-emerald-100/70 mb-8">Not sure if you should hit the gym or stick to bodyweight? Our quiz analyzes your lifestyle to match you perfectly.</p>
+                        <button onclick="showPage('tracker')" class="flex items-center gap-2 text-secondary font-bold group-hover:gap-4 transition-all">Take the Quiz <span class="material-symbols-outlined">arrow_forward</span></button>
+                    </div>
+                    <div class="absolute bottom-0 right-0 w-1/2 h-full opacity-20 group-hover:opacity-40 transition-opacity">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI7NvYCPgssSSqEWAjNhVR9EKMbAkQwi_SZetN5UEmDx41yxFHOmuN2vlhbtSQSLq4S-RjwL16xOqCS7lYZ57BuQvNP8tEx8_2nobQYCT4miyfZOOXMgAeWKO78IMnS3n88c_aUlVKZryTfXZbNRII008Wg_JdkG-F2AWX3UY4P_EEBGrXArMl_EMOtDoH6RGaUKKQ6Rk88eiieKdQnds7JifcOg87MGgVotmMsX4_vKy8pfAifEcAny-w22vC-Vv1MZ7-DTeOeehI" class="object-cover h-full w-full">
+                    </div>
+                </div>
+                <div class="md:col-span-4 bg-secondary text-white rounded-[32px] p-10 flex flex-col justify-between warm-glow">
+                    <div>
+                        <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-3xl">bedtime</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-2">Bad Day Button</h3>
+                        <p class="opacity-80">Low energy? Press this for a guilt-free 5-minute bed stretch.</p>
+                    </div>
+                    <button onclick="showPage('tracker')" class="mt-8 bg-white text-secondary py-4 rounded-full font-bold shadow-lg">I Need This</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- TRACKER PAGE -->
+    <div id="tracker" class="page hidden min-h-screen bg-background pb-32">
+        <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center w-full px-6 py-4 shadow-sm">
+            <div class="flex items-center gap-3">
+                <div onclick="showPage('profile')" class="cursor-pointer w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center font-bold text-primary">JD</div>
+                <h1 class="text-primary font-bold">Hello, Progress!</h1>
+            </div>
+            <span onclick="showToast('You have 0 new notifications')" class="material-symbols-outlined text-primary cursor-pointer active:scale-95 transition-transform">notifications</span>
+        </header>
+
+        <main class="max-w-md mx-auto px-6 pt-8 space-y-10">
+            <div class="space-y-2">
+                <h2 class="text-3xl font-bold text-primary">Did you move today?</h2>
+                <p class="text-slate-500">No pressure, just checking in.</p>
+            </div>
+            <div class="space-y-4">
+                <button onclick="showPage('workout')" class="w-full flex items-center justify-between p-6 bg-white rounded-3xl border-2 border-transparent hover:border-secondary transition-all shadow-sm group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">check_circle</span>
+                        </div>
+                        <span class="font-bold text-primary">Yes, I crushed it!</span>
+                    </div>
+                    <span class="material-symbols-outlined text-secondary group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </button>
+                <div onclick="showPage('active')" class="relative overflow-hidden rounded-[32px] bg-secondary p-8 text-white group cursor-pointer active:scale-95 transition-all warm-glow">
+                    <div class="relative z-10 flex items-center justify-between">
+                        <div class="space-y-1">
+                            <h3 class="text-2xl font-bold">Having a 'Bad Day'?</h3>
+                            <p class="opacity-90">Try a 5-min bed stretch.</p>
+                        </div>
+                        <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <span class="material-symbols-outlined text-3xl">bedtime</span>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                </div>
+            </div>
+
+            <section class="bg-emerald-50 rounded-[32px] p-6 space-y-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1">local_fire_department</span>
+                        <h3 class="font-bold text-primary text-xl">4 Day Streak</h3>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="showToast('Viewing Monday Log')"><span class="text-xs font-bold opacity-40">M</span><div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center"><span class="material-symbols-outlined">done</span></div></div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="showToast('Viewing Tuesday Log')"><span class="text-xs font-bold opacity-40">T</span><div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center"><span class="material-symbols-outlined">done</span></div></div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="showToast('Viewing Wednesday Log')"><span class="text-xs font-bold opacity-40">W</span><div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center"><span class="material-symbols-outlined">done</span></div></div>
+                    <div class="flex flex-col items-center gap-2 cursor-pointer" onclick="showToast('Viewing Thursday Log')"><span class="text-xs font-bold opacity-40">T</span><div class="w-10 h-10 rounded-full bg-secondary text-white flex items-center justify-center ring-4 ring-orange-100 shadow-lg"><span class="material-symbols-outlined">bolt</span></div></div>
+                    <div class="flex flex-col items-center gap-2 opacity-20 cursor-pointer" onclick="showToast('Friday Log empty')"><span class="text-xs font-bold">F</span><div class="w-10 h-10 rounded-full bg-slate-200"></div></div>
+                    <div class="flex flex-col items-center gap-2 opacity-20 cursor-pointer" onclick="showToast('Saturday Log empty')"><span class="text-xs font-bold">S</span><div class="w-10 h-10 rounded-full bg-slate-200"></div></div>
+                    <div class="flex flex-col items-center gap-2 opacity-20 cursor-pointer" onclick="showToast('Sunday Log empty')"><span class="text-xs font-bold">S</span><div class="w-10 h-10 rounded-full bg-slate-200"></div></div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Nav -->
+        <nav class="fixed bottom-0 w-full bg-white border-t p-4 flex justify-around items-center rounded-t-[32px] shadow-2xl z-50">
+            <button onclick="showPage('tracker')" class="nav-btn flex flex-col items-center gap-1 text-secondary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="showPage('nutrition')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">restaurant</span>
+                <span class="text-[10px] font-bold">Eat</span>
+            </button>
+            <button onclick="showPage('workout')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">fitness_center</span>
+                <span class="text-[10px] font-bold">Train</span>
+            </button>
+            <button onclick="showPage('profile')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- WORKOUT PAGE -->
+    <div id="workout" class="page hidden min-h-screen bg-background pb-48">
+        <header class="bg-white sticky top-0 z-50 p-6 border-b flex justify-between items-center">
+            <h1 class="text-xl font-bold text-primary">Daily Burn</h1>
+            <div class="flex items-center gap-3">
+                <button onclick="showPage('library')" class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-xl">menu_book</span>
+                </button>
+                <span class="bg-orange-100 text-secondary px-3 py-1 rounded-full text-xs font-bold">Challenging</span>
+            </div>
+        </header>
+        <main class="max-w-2xl mx-auto p-6 space-y-6">
+            <div class="p-6 bg-white rounded-3xl whiteboard-shadow flex gap-6 items-center">
+                <div class="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden relative"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6RgdNZ-USp7c8Db7GPPFTexUoS02C_Fg6dVsvNef16OnAH63g3dyhDitnXiCFZKsXOY6SeFpa3lBKHQFxY_Rk4DUVWmya6R7GYetJsSpE_v1QNaijMDp8i-XljKh6eLP02lqYEAuCjcsJax-UGDMNtaI9wttM8w77-ll5CYx8vPteFumnfRLBEtS6DgUcIBsUYMNaIAbpij_RzU69csWMxQNx_QdCo9YEINMTLKWU6nWVnwKxaQF57pQN22qogbO_EkQcen_8Ifta" class="object-cover"></div>
+                <div class="flex-grow">
+                    <h3 class="font-bold text-primary">Pushups</h3>
+                    <p class="text-sm font-bold text-secondary">3 sets of 15 reps</p>
+                    <p class="text-xs text-slate-400 mt-1 italic">Keep elbows tucked at 45°</p>
+                </div>
+                <span class="material-symbols-outlined text-emerald-200">check_circle</span>
+            </div>
+            <div onclick="showPage('active')" class="p-6 bg-white rounded-3xl whiteboard-shadow flex gap-6 items-center border-2 border-secondary ring-4 ring-orange-50 cursor-pointer animate-pulse">
+                <div class="w-20 h-20 bg-slate-100 rounded-2xl overflow-hidden relative"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-qFCpQi25cQZqRHKzEwqBFCOSBbG1ft7GUh8aGAyDvHrl_yjdDIVYEFC_rmX02jGPzoGMSVzcPVSj_kBA8m2z5nq6GbjKG4AERPhABX8MPmHQT2Nm4bFw8khPreORnJkqvO-W06fqC2_GfCQ-W0_Rq4QNSEB37ieGcmhxCtnnyeqIvf6MjzJ_npG4I24X3aOkTPC6lX3Jyg-TylkVJC2Op4IDOsWz1AUzG8h8dsa2v8srjwRpcHemaKpNqvPKaNWXzPxQapjYzSIh" class="object-cover"></div>
+                <div class="flex-grow">
+                    <h3 class="font-bold text-primary">Mountain Climbers</h3>
+                    <p class="text-sm font-bold text-secondary">4 sets of 45 seconds</p>
+                    <p class="text-xs text-slate-400 mt-1 italic">Maintain a flat back</p>
+                </div>
+                <span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1">play_circle</span>
+            </div>
+        </main>
+        <!-- Bottom Nav -->
+        <nav class="fixed bottom-0 w-full bg-white border-t p-4 flex justify-around items-center rounded-t-[32px] shadow-2xl z-50">
+            <button onclick="showPage('tracker')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="showPage('nutrition')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">restaurant</span>
+                <span class="text-[10px] font-bold">Eat</span>
+            </button>
+            <button onclick="showPage('workout')" class="nav-btn flex flex-col items-center gap-1 text-secondary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">fitness_center</span>
+                <span class="text-[10px] font-bold">Train</span>
+            </button>
+            <button onclick="showPage('profile')" class="nav-btn flex flex-col items-center gap-1 text-slate-300">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ACTIVE WORKOUT PAGE -->
+    <div id="active" class="page hidden min-h-screen bg-primary text-white">
+        <header class="p-6 flex justify-between items-center bg-primary-container/30">
+            <button onclick="showPage('workout')" class="flex items-center gap-2"><span class="material-symbols-outlined">arrow_back</span><span class="font-bold">End</span></button>
+            <div class="text-center"><p class="text-[10px] uppercase font-bold opacity-60">Mountain Climbers</p><p class="font-bold">Set 2 of 4</p></div>
+            <span class="material-symbols-outlined">settings</span>
+        </header>
+        <main class="p-6 flex flex-col items-center">
+            <div class="w-full aspect-square bg-white/5 rounded-[40px] overflow-hidden mb-12 relative border border-white/10">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-qFCpQi25cQZqRHKzEwqBFCOSBbG1ft7GUh8aGAyDvHrl_yjdDIVYEFC_rmX02jGPzoGMSVzcPVSj_kBA8m2z5nq6GbjKG4AERPhABX8MPmHQT2Nm4bFw8khPreORnJkqvO-W06fqC2_GfCQ-W0_Rq4QNSEB37ieGcmhxCtnnyeqIvf6MjzJ_npG4I24X3aOkTPC6lX3Jyg-TylkVJC2Op4IDOsWz1AUzG8h8dsa2v8srjwRpcHemaKpNqvPKaNWXzPxQapjYzSIh" class="object-cover h-full w-full">
+                <div class="absolute inset-0 bg-gradient-to-t from-primary to-transparent opacity-60"></div>
+                <div class="absolute bottom-8 left-0 right-0 text-center"><span class="bg-secondary px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest">Active set</span></div>
+            </div>
+            <div class="w-64 h-64 rounded-full border-8 border-white/5 flex items-center justify-center relative mb-12">
+                <div class="text-center">
+                    <span class="text-7xl font-black tabular-nums">42</span>
+                    <p class="text-xs font-bold opacity-60 uppercase tracking-widest">Seconds</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-8">
+                <button class="w-16 h-16 rounded-full border-2 border-white/20 flex items-center justify-center"><span class="material-symbols-outlined">replay</span></button>
+                <button class="w-24 h-24 rounded-full bg-secondary flex items-center justify-center shadow-2xl shadow-secondary/40"><span class="material-symbols-outlined text-5xl" style="font-variation-settings: 'FILL' 1">pause</span></button>
+                <button class="w-16 h-16 rounded-full border-2 border-white/20 flex items-center justify-center"><span class="material-symbols-outlined">skip_next</span></button>
+            </div>
+        </main>
+    </div>
+
+    <!-- NUTRITION HUB -->
+    <div id="nutrition" class="page hidden min-h-screen bg-background pb-32">
+        <header class="bg-white sticky top-0 z-50 p-6 border-b flex justify-between items-center">
+            <h1 class="text-xl font-bold text-primary">Nutrition Hub</h1>
+            <span class="material-symbols-outlined text-primary">restaurant_menu</span>
+        </header>
+        <main class="max-w-7xl mx-auto p-6 space-y-10">
+            <div class="bg-emerald-950 text-white rounded-[32px] p-8 relative overflow-hidden">
+                <div class="relative z-10 md:w-2/3">
+                    <span class="bg-emerald-500 text-white px-4 py-1 rounded-full text-xs font-bold mb-4 inline-block">Golden Rule</span>
+                    <h2 class="text-3xl font-bold mb-4">The Portion Rule</h2>
+                    <p class="text-emerald-100/70 mb-6">Aim for 1/2 vegetables, 1/4 protein, and 1/4 complex swallows.</p>
+                </div>
+                <div class="absolute right-0 bottom-0 w-48 h-48 opacity-20"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcyq8Wu47ZoeqC6LWpWGJNcrHiY-eIJS5sH6k9lqz0FEaqGlMCb3qmfVxZjo4oxRAV8mFpWZkOc3PargPAE-jKYVtxl6YbRxp4cJAP6uDuvH9M2QyxDLyHfRSGtqDRi8tz4uPUrfFkywoLQxxA6buH6uXVf_KfkFCa_UBqQ0k17SoD6MiIgTsDAAw3O38-Ks07Qpd78x1TDzM18JDPF5myHdzYmcY66VG4rPm0oHXsJCIMz15LvsZ-jtj1KZtR-m50qIwfo0NKFbfP" class="object-contain"></div>
+            </div>
+            
+            <section class="space-y-6">
+                <h3 class="text-2xl font-bold text-primary">Naija Fuel</h3>
+                <div class="bg-white rounded-[32px] overflow-hidden shadow-sm border flex flex-col md:flex-row group cursor-pointer" onclick="showPage('recipe')">
+                    <div class="md:w-1/2 h-48 md:h-auto overflow-hidden"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5le76TNflk37vwnZtyHT05It3UpOQjJSCr55tonZDKPgNflHElA-VtP1ABBA0g4A3h_3pxkLO45gVj76n9cJPz7H2nIzxhb3919gtgicniizt3O1lbYcUoBV6cFJ1_1wsCvOHGy4xsqcZz-CS0DikMqahj5JAwXFNZG6ZmRtGJAdR37isJJPGYMMjNIjFcJ21D3BwwUssEaRiyAQwPzDYrNrvjh-pm41janHJJTlLaJQGFbhP3zMvRqs1i1uDSr03Ff9rfhvDpMs" class="object-cover h-full w-full group-hover:scale-105 transition-transform duration-500"></div>
+                    <div class="p-8 md:w-1/2 relative">
+                        <span class="text-xs font-bold text-secondary uppercase tracking-widest">Lunch</span>
+                        <h4 class="text-xl font-bold mt-1 group-hover:text-secondary transition-colors">Brown Jollof & Stir-fry</h4>
+                        <p class="text-slate-500 mt-4 text-sm">A heart-healthy twist on the classic. Swapping white rice for local brown rice.</p>
+                        <div class="mt-6 flex gap-4 text-sm font-bold text-primary"><span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">timer</span> 45m</span><span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm">bolt</span> 520 kcal</span></div>
+                        <div class="absolute right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all">
+                            <span class="material-symbols-outlined text-secondary">arrow_forward</span>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="toggleMarketList(true)" class="w-full bg-primary text-white py-4 rounded-full font-bold shadow-lg active:scale-95 transition-transform mt-6">Generate Market List</button>
+            </section>
+        </main>
+        <!-- Bottom Nav -->
+        <nav class="fixed bottom-0 w-full bg-white dark:bg-emerald-950 border-t dark:border-emerald-900 p-4 flex justify-around items-center rounded-t-[32px] shadow-2xl z-50">
+            <button onclick="showPage('tracker')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="showPage('nutrition')" class="nav-btn flex flex-col items-center gap-1 text-secondary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">restaurant</span>
+                <span class="text-[10px] font-bold">Eat</span>
+            </button>
+            <button onclick="showPage('workout')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">fitness_center</span>
+                <span class="text-[10px] font-bold">Train</span>
+            </button>
+            <button onclick="showPage('profile')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="profile" class="page hidden min-h-screen bg-background pb-32">
+        <header class="bg-white dark:bg-emerald-950 p-8 pt-12 pb-20 rounded-b-[40px] shadow-sm relative overflow-hidden text-center">
+            <div class="max-w-7xl mx-auto relative z-10">
+                <div class="w-24 h-24 rounded-full border-4 border-white dark:border-emerald-900 shadow-xl overflow-hidden bg-stone-100 mx-auto mb-4">
+                    <img src="https://lh3.googleusercontent.com/d/1XlR_S0-S7r8XhIqB7V6Q5S7n9zZ3L8P2" class="w-full h-full object-cover">
+                </div>
+                <h1 class="text-2xl font-bold text-primary dark:text-white">Tunde Adebayo</h1>
+                <p class="text-stone-500 dark:text-emerald-300/60 text-sm">Fitness Enthusiast • Lagos, NG</p>
+                <div class="mt-6 flex gap-4 justify-center" onclick="showPage('progress')">
+                    <div class="bg-emerald-50 dark:bg-white/5 p-4 rounded-2xl border flex-1 cursor-pointer hover:bg-emerald-100 dark:hover:bg-white/10 transition-colors">
+                        <div class="text-xl font-bold text-primary dark:text-emerald-400">12</div>
+                        <div class="text-[10px] uppercase font-bold text-stone-400">Workouts</div>
+                    </div>
+                    <div class="bg-emerald-50 dark:bg-white/5 p-4 rounded-2xl border flex-1 cursor-pointer hover:bg-emerald-100 dark:hover:bg-white/10 transition-colors">
+                        <div class="text-xl font-bold text-secondary">8</div>
+                        <div class="text-[10px] uppercase font-bold text-stone-400">Streak</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main class="max-w-7xl mx-auto px-6 -mt-10 relative z-20 space-y-6">
+            <div class="bg-white dark:bg-emerald-900/40 p-6 rounded-[32px] shadow-sm border space-y-4">
+                <div class="flex items-center justify-between border-b pb-4 cursor-pointer group" onclick="showToast('Opening Profile Editor')">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-blue-50 p-2 rounded-lg text-blue-600 group-hover:bg-blue-100 transition-colors"><span class="material-symbols-outlined">person</span></div>
+                        <span class="font-bold group-hover:text-blue-700 transition-colors">Edit Profile</span>
+                    </div>
+                    <span class="material-symbols-outlined text-stone-300">chevron_right</span>
+                </div>
+                <div class="flex items-center justify-between border-b pb-4 cursor-pointer group" onclick="showPage('pro')">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-purple-50 p-2 rounded-lg text-purple-600 group-hover:bg-purple-100 transition-colors"><span class="material-symbols-outlined">workspace_premium</span></div>
+                        <span class="font-bold group-hover:text-purple-700 transition-colors">Subscription</span>
+                    </div>
+                    <span class="bg-secondary/10 text-secondary text-[10px] font-black px-2 py-1 rounded">PRO</span>
+                </div>
+                <div class="flex items-center justify-between cursor-pointer group" onclick="showToast('Logging out... (Simulation)')">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-red-50 p-2 rounded-lg text-red-600 group-hover:bg-red-100 transition-colors"><span class="material-symbols-outlined">logout</span></div>
+                        <span class="font-bold text-red-600 group-hover:text-red-700 transition-colors">Logout</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+        <!-- Bottom Nav -->
+        <nav class="fixed bottom-0 w-full bg-white dark:bg-emerald-950 border-t dark:border-emerald-900 p-4 flex justify-around items-center rounded-t-[32px] shadow-2xl z-50">
+            <button onclick="showPage('tracker')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">home</span>
+                <span class="text-[10px] font-bold">Home</span>
+            </button>
+            <button onclick="showPage('nutrition')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">restaurant</span>
+                <span class="text-[10px] font-bold">Eat</span>
+            </button>
+            <button onclick="showPage('workout')" class="nav-btn flex flex-col items-center gap-1 text-slate-300 dark:text-emerald-100/30">
+                <span class="material-symbols-outlined">fitness_center</span>
+                <span class="text-[10px] font-bold">Train</span>
+            </button>
+            <button onclick="showPage('profile')" class="nav-btn flex flex-col items-center gap-1 text-secondary">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">person</span>
+                <span class="text-[10px] font-bold">Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- EXERCISE LIBRARY PAGE -->
+    <div id="library" class="page hidden min-h-screen bg-background pb-32 font-jakarta">
+        <header class="bg-white dark:bg-emerald-950 p-6 pt-12 pb-6 border-b border-stone-100 dark:border-emerald-900 sticky top-0 z-40">
+            <div class="flex items-center gap-4 mb-6">
+                <button onclick="showPage('workout')" class="w-10 h-10 bg-stone-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-primary dark:text-white transition-colors">
+                    <span class="material-symbols-outlined text-lg">arrow_back</span>
+                </button>
+                <h1 class="text-xl font-bold text-primary dark:text-white font-lexend">Exercise Library</h1>
+            </div>
+            
+            <div class="relative">
+                <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">search</span>
+                <input type="text" placeholder="Search exercises..." class="w-full bg-stone-100 dark:bg-black border-transparent focus:border-secondary focus:ring-secondary rounded-full py-4 pl-12 pr-12 text-sm font-medium outline-none transition-all dark:text-white" />
+                <button onclick="showToast('Filter options opened')" class="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-emerald-900 flex items-center justify-center text-primary dark:text-white shadow-sm active:scale-95 transition-transform">
+                    <span class="material-symbols-outlined text-lg">tune</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="max-w-xl mx-auto px-6 mt-6 space-y-8">
+            <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                <button onclick="showToast('Filter: All selected')" class="whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-primary text-white shadow-md active:scale-95">All</button>
+                <button onclick="showToast('Filter: Core selected')" class="whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-white dark:bg-emerald-900/40 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-white/5 active:scale-95">Core</button>
+                <button onclick="showToast('Filter: Upper Body selected')" class="whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-white dark:bg-emerald-900/40 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-white/5 active:scale-95">Upper Body</button>
+                <button onclick="showToast('Filter: Lower Body selected')" class="whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-white dark:bg-emerald-900/40 text-stone-600 dark:text-stone-300 border border-stone-200 dark:border-white/5 active:scale-95">Lower Body</button>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-xs font-bold text-stone-400 uppercase tracking-widest px-2">Showing 3 Exercises</p>
+                
+                <div class="bg-white dark:bg-emerald-900/20 p-4 rounded-3xl shadow-sm border border-stone-100 dark:border-white/5 flex gap-4 items-center group cursor-pointer hover:border-secondary transition-colors">
+                    <div class="relative w-24 h-24 rounded-2xl overflow-hidden bg-stone-100 flex-shrink-0">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-qFCpQi25cQZqRHKzEwqBFCOSBbG1ft7GUh8aGAyDvHrl_yjdDIVYEFC_rmX02jGPzoGMSVzcPVSj_kBA8m2z5nq6GbjKG4AERPhABX8MPmHQT2Nm4bFw8khPreORnJkqvO-W06fqC2_GfCQ-W0_Rq4QNSEB37ieGcmhxCtnnyeqIvf6MjzJ_npG4I24X3aOkTPC6lX3Jyg-TylkVJC2Op4IDOsWz1AUzG8h8dsa2v8srjwRpcHemaKpNqvPKaNWXzPxQapjYzSIh" class="object-cover h-full w-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="flex-grow py-1">
+                        <h3 class="font-bold text-primary dark:text-white text-lg">Mountain Climbers</h3>
+                        <p class="text-stone-500 dark:text-stone-400 text-sm font-medium mt-1">Core & Cardio</p>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="bg-stone-100 dark:bg-black text-stone-600 dark:text-stone-300 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Intermediate</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-emerald-900/20 p-4 rounded-3xl shadow-sm border border-stone-100 dark:border-white/5 flex gap-4 items-center group cursor-pointer hover:border-secondary transition-colors">
+                    <div class="relative w-24 h-24 rounded-2xl overflow-hidden bg-stone-100 flex-shrink-0">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6RgdNZ-USp7c8Db7GPPFTexUoS02C_Fg6dVsvNef16OnAH63g3dyhDitnXiCFZKsXOY6SeFpa3lBKHQFxY_Rk4DUVWmya6R7GYetJsSpE_v1QNaijMDp8i-XljKh6eLP02lqYEAuCjcsJax-UGDMNtaI9wttM8w77-ll5CYx8vPteFumnfRLBEtS6DgUcIBsUYMNaIAbpij_RzU69csWMxQNx_QdCo9YEINMTLKWU6nWVnwKxaQF57pQN22qogbO_EkQcen_8Ifta" class="object-cover h-full w-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="flex-grow py-1">
+                        <h3 class="font-bold text-primary dark:text-white text-lg">Pushups</h3>
+                        <p class="text-stone-500 dark:text-stone-400 text-sm font-medium mt-1">Upper Body</p>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="bg-stone-100 dark:bg-black text-stone-600 dark:text-stone-300 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Beginner</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-white dark:bg-emerald-900/20 p-4 rounded-3xl shadow-sm border border-stone-100 dark:border-white/5 flex gap-4 items-center group cursor-pointer hover:border-secondary transition-colors">
+                    <div class="relative w-24 h-24 rounded-2xl overflow-hidden bg-stone-100 flex-shrink-0">
+                        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMacvYe9-adSiBfjJIgBs3AjCsJqpnl5gDRoZ-WyYGWSlUlw_9tJuggYdgdmoLkUbb5tYx5iHFspc2LYQ49SQ9Q4rnv6DOodlCJ_cJ5u1iiegBXHuKRnTrretE5VuzkZAT-2drRJDcETff7kaFANVU_a-YtSiFZGWG5pSCu9kG0qfWISq93DR_YlncI7z1lO_CROxrjOBwMPoKBxeM4YrNlRZr2B7mrKzoj6jUvZw1TR-OYOhgbEmyBTC-JbaN4f50jMnmpq1q7ky9" class="object-cover h-full w-full group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="flex-grow py-1">
+                        <h3 class="font-bold text-primary dark:text-white text-lg">Jumping Jacks</h3>
+                        <p class="text-stone-500 dark:text-stone-400 text-sm font-medium mt-1">Cardio</p>
+                        <div class="mt-3 flex items-center gap-2">
+                            <span class="bg-stone-100 dark:bg-black text-stone-600 dark:text-stone-300 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">Beginner</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    </div>
+
+    <!-- PROGRESS PAGE -->
+    <div id="progress" class="page hidden min-h-screen bg-background pb-32 font-jakarta">
+        <header class="bg-primary text-white p-6 pt-12 pb-20 rounded-b-[40px] shadow-lg relative overflow-hidden">
+            <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
+            <div class="absolute -left-10 bottom-0 w-32 h-32 bg-secondary/20 rounded-full blur-2xl"></div>
+            
+            <div class="flex items-center gap-4 mb-8 relative z-10">
+                <button onclick="showPage('profile')" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors border border-white/10">
+                    <span class="material-symbols-outlined text-lg">arrow_back</span>
+                </button>
+                <h1 class="text-xl font-bold font-lexend">Analytics & Progress</h1>
+            </div>
+
+            <div class="flex items-end justify-between relative z-10">
+                <div>
+                    <p class="text-emerald-100/60 text-sm font-medium uppercase tracking-widest mb-1">Current Streak</p>
+                    <div class="text-5xl font-black font-lexend flex items-baseline gap-2">
+                        8 <span class="text-xl text-secondary">Days</span>
+                    </div>
+                </div>
+                <div class="w-16 h-16 bg-secondary/20 border border-secondary/30 rounded-2xl flex items-center justify-center text-secondary shadow-inner">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1">local_fire_department</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-xl mx-auto px-6 -mt-10 relative z-20 space-y-6">
+            <!-- Weekly Activity Chart -->
+            <section class="bg-white dark:bg-emerald-950 p-6 rounded-[32px] shadow-sm border border-stone-100 dark:border-emerald-900">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-primary dark:text-white font-lexend">Weekly Activity</h2>
+                    <select class="bg-stone-50 dark:bg-black text-xs font-bold text-stone-600 dark:text-emerald-100/60 py-2 px-3 rounded-full border-none outline-none">
+                        <option>This Week</option>
+                        <option>Last Week</option>
+                    </select>
+                </div>
+                
+                <div class="flex justify-between items-end h-32 mb-4 px-2">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-secondary h-12 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-primary dark:text-white">M</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-secondary h-20 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-primary dark:text-white">T</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-secondary h-16 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-primary dark:text-white">W</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-secondary h-24 relative group cursor-pointer transition-all hover:opacity-80">
+                            <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-primary dark:bg-white text-white dark:text-primary text-[10px] font-bold py-1 px-2 rounded-lg shadow-xl whitespace-nowrap">45 mins</div>
+                        </div>
+                        <span class="text-xs font-bold text-primary dark:text-white">T</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-stone-100 dark:bg-emerald-900/50 h-8 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-stone-400 dark:text-emerald-100/30">F</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-stone-100 dark:bg-emerald-900/50 h-4 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-stone-400 dark:text-emerald-100/30">S</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-8 rounded-full bg-stone-100 dark:bg-emerald-900/50 h-6 relative group cursor-pointer transition-all hover:opacity-80"></div>
+                        <span class="text-xs font-bold text-stone-400 dark:text-emerald-100/30">S</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bad Day Downgrades -->
+            <section class="bg-secondary text-white p-6 rounded-[32px] shadow-lg relative overflow-hidden group">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+                <div class="relative z-10 flex items-center justify-between">
+                    <div class="space-y-1">
+                        <p class="text-xs font-bold uppercase tracking-widest text-orange-200">Bad Day Downgrades</p>
+                        <h3 class="text-3xl font-black font-lexend">3 Saved</h3>
+                        <p class="text-sm text-orange-100/80 mt-2 max-w-[200px] leading-snug">
+                            You chose a 5-min stretch instead of doing nothing. That's a win!
+                        </p>
+                    </div>
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
+                        <span class="material-symbols-outlined text-3xl">health_and_safety</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Weight Tracker -->
+            <section class="bg-white dark:bg-emerald-950 p-6 rounded-[32px] shadow-sm border border-stone-100 dark:border-emerald-900">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-primary dark:text-white font-lexend">Weight Tracker</h2>
+                    <button onclick="showToast('Log Weight modal opened')" class="bg-emerald-50 dark:bg-emerald-900/30 text-primary dark:text-emerald-400 p-2 rounded-full active:scale-95 transition-transform">
+                        <span class="material-symbols-outlined text-sm">add</span>
+                    </button>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Current</p>
+                        <p class="text-2xl font-black text-primary dark:text-white">74.2 <span class="text-sm text-stone-500">KG</span></p>
+                    </div>
+                    <div class="w-px h-10 bg-stone-100 dark:bg-emerald-900/50"></div>
+                    <div>
+                        <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Target</p>
+                        <p class="text-2xl font-black text-primary dark:text-white">70.0 <span class="text-sm text-stone-500">KG</span></p>
+                    </div>
+                    <div class="w-px h-10 bg-stone-100 dark:bg-emerald-900/50"></div>
+                    <div>
+                        <p class="text-xs font-bold text-stone-400 uppercase tracking-widest">Lost</p>
+                        <p class="text-2xl font-black text-secondary">2.8 <span class="text-sm opacity-60">KG</span></p>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-stone-100 dark:border-emerald-900/50">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                            <span class="material-symbols-outlined text-sm">trending_up</span>
+                        </div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300">You are on track to hit your goal by <span class="font-bold text-primary dark:text-white">December 15</span>.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    </div>
+
+    <!-- PRO PAGE -->
+    <div id="pro" class="page hidden min-h-screen bg-emerald-950 text-white font-jakarta pb-32">
+        <!-- Dynamic Header -->
+        <div class="relative pt-12 pb-20 px-6 overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-secondary/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-80 h-80 bg-primary/40 rounded-full blur-3xl"></div>
+            
+            <div class="relative z-10 flex items-center gap-4 mb-10">
+                <button onclick="showPage('profile')" class="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center hover:bg-white/20 transition-colors border border-white/10">
+                    <span class="material-symbols-outlined text-lg">arrow_back</span>
+                </button>
+                <span class="bg-secondary/20 text-secondary text-xs font-black px-3 py-1 rounded-full uppercase tracking-widest border border-secondary/30">NaijaFit Pro</span>
+            </div>
+
+            <div class="relative z-10 text-center">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-tr from-secondary to-orange-400 mb-6 shadow-xl shadow-secondary/30">
+                    <span class="material-symbols-outlined text-4xl text-white" style="font-variation-settings: 'FILL' 1">star</span>
+                </div>
+                <h1 class="text-4xl font-black font-lexend leading-tight mb-4">
+                    Never Feel <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-orange-300">Stuck Again.</span>
+                </h1>
+                <p class="text-emerald-100/70 text-lg max-w-sm mx-auto">
+                    Upgrade your fitness journey with 1-on-1 WhatsApp coaching, custom meal plans, and real accountability.
+                </p>
+            </div>
+        </div>
+
+        <main class="max-w-xl mx-auto px-6 -mt-8 relative z-20 space-y-6">
+            <!-- Pricing Card -->
+            <div class="bg-gradient-to-b from-white/10 to-white/5 p-1 rounded-[32px] backdrop-blur-xl border border-white/10 shadow-2xl">
+                <div class="bg-emerald-900/40 p-8 rounded-[28px] relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary via-orange-400 to-secondary"></div>
+                    
+                    <div class="flex justify-between items-end mb-8">
+                        <div>
+                            <p class="text-sm font-bold text-emerald-300 uppercase tracking-widest mb-1">Monthly Plan</p>
+                            <div class="flex items-baseline gap-1">
+                                <span class="text-4xl font-black font-lexend">₦15,000</span>
+                                <span class="text-emerald-100/50">/mo</span>
+                            </div>
+                        </div>
+                        <div class="bg-secondary/20 text-secondary text-[10px] font-black px-2 py-1 rounded">POPULAR</div>
+                    </div>
+
+                    <div class="space-y-4 mb-8">
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-secondary flex-shrink-0">check_circle</span>
+                            <span class="text-sm text-emerald-50 leading-snug">Direct WhatsApp access to certified NaijaFit coaches</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-secondary flex-shrink-0">check_circle</span>
+                            <span class="text-sm text-emerald-50 leading-snug">Personalized meal plans with your local favorites</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-secondary flex-shrink-0">check_circle</span>
+                            <span class="text-sm text-emerald-50 leading-snug">Form correction via video feedback</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-secondary flex-shrink-0">check_circle</span>
+                            <span class="text-sm text-emerald-50 leading-snug">Exclusive community group for accountability</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-outlined text-secondary flex-shrink-0">check_circle</span>
+                            <span class="text-sm text-emerald-50 leading-snug">Cancel anytime guarantee</span>
+                        </div>
+                    </div>
+
+                    <button onclick="showToast('Redirecting to Paystack...')" class="w-full bg-secondary text-white py-5 rounded-full font-bold shadow-xl shadow-secondary/20 active:scale-[0.98] transition-transform flex justify-center items-center gap-2 group">
+                        <span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1">bolt</span>
+                        Upgrade to PRO
+                    </button>
+                    <p class="text-center text-xs text-emerald-100/40 mt-4">Billed securely via Paystack. Cancel anytime.</p>
+                </div>
+            </div>
+
+            <!-- Coach Section -->
+            <div class="bg-white/5 p-6 rounded-[32px] border border-white/5 flex gap-4 items-center">
+                <div class="relative w-16 h-16 rounded-full overflow-hidden border-2 border-secondary flex-shrink-0">
+                    <img src="https://lh3.googleusercontent.com/d/1XlR_S0-S7r8XhIqB7V6Q5S7n9zZ3L8P2" alt="Coach" class="object-cover w-full h-full">
+                    <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-emerald-950"></div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg">Coach Tunde is online</h3>
+                    <p class="text-sm text-emerald-100/60">Average response time: 5 mins</p>
+                </div>
+                <div onclick="showToast('Opening WhatsApp...')" class="ml-auto bg-green-500/20 p-3 rounded-full text-green-400 flex items-center justify-center cursor-pointer active:scale-95 transition-transform">
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">chat</span>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- RECIPE DETAIL PAGE -->
+    <div id="recipe" class="page hidden min-h-screen bg-background pb-32 font-jakarta">
+        <!-- Hero Section -->
+        <div class="relative h-[400px] w-full rounded-b-[40px] overflow-hidden shadow-lg">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5le76TNflk37vwnZtyHT05It3UpOQjJSCr55tonZDKPgNflHElA-VtP1ABBA0g4A3h_3pxkLO45gVj76n9cJPz7H2nIzxhb3919gtgicniizt3O1lbYcUoBV6cFJ1_1wsCvOHGy4xsqcZz-CS0DikMqahj5JAwXFNZG6ZmRtGJAdR37isJJPGYMMjNIjFcJ21D3BwwUssEaRiyAQwPzDYrNrvjh-pm41janHJJTlLaJQGFbhP3zMvRqs1i1uDSr03Ff9rfhvDpMs" class="object-cover w-full h-full">
+            <div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+            
+            <button onclick="showPage('nutrition')" class="absolute top-12 left-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/30 hover:bg-white/40 transition-colors">
+                <span class="material-symbols-outlined text-lg">arrow_back</span>
+            </button>
+            
+            <button onclick="showToast('Playing Recipe Video...')" class="absolute top-12 right-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/30 hover:bg-white/40 transition-colors">
+                <span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1">play_arrow</span>
+            </button>
+
+            <div class="absolute bottom-8 left-6 right-6 text-white">
+                <span class="bg-secondary px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 inline-block shadow-lg shadow-secondary/50">Lunch Idea</span>
+                <h1 class="text-3xl font-bold font-lexend leading-tight">Brown Jollof & Stir-fry</h1>
+            </div>
+        </div>
+
+        <main class="max-w-xl mx-auto px-6 mt-6 space-y-8">
+            <!-- Quick Stats -->
+            <div class="flex justify-between bg-white dark:bg-emerald-950 p-6 rounded-3xl shadow-sm border border-emerald-50 dark:border-emerald-900">
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-900/50 flex items-center justify-center text-primary dark:text-emerald-400">
+                        <span class="material-symbols-outlined text-lg">schedule</span>
+                    </div>
+                    <span class="text-xs font-bold text-stone-500 dark:text-emerald-100/60 uppercase">45 Mins</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center text-secondary">
+                        <span class="material-symbols-outlined text-lg">local_fire_department</span>
+                    </div>
+                    <span class="text-xs font-bold text-stone-500 dark:text-emerald-100/60 uppercase">520 Kcal</span>
+                </div>
+                <div class="flex flex-col items-center gap-2">
+                    <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                        <span class="material-symbols-outlined text-lg">restaurant</span>
+                    </div>
+                    <span class="text-xs font-bold text-stone-500 dark:text-emerald-100/60 uppercase">Easy</span>
+                </div>
+            </div>
+
+            <!-- Macros Breakdown -->
+            <section>
+                <h2 class="text-lg font-bold text-primary dark:text-white mb-4 font-lexend">Nutrition Breakdown</h2>
+                <div class="flex gap-4">
+                    <div class="flex-1 bg-white dark:bg-emerald-900/40 p-4 rounded-[20px] shadow-sm border border-stone-100 dark:border-white/5 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                        <div class="text-xl font-bold text-blue-500 mb-1">35g</div>
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Protein</div>
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-emerald-900/40 p-4 rounded-[20px] shadow-sm border border-stone-100 dark:border-white/5 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-orange-500"></div>
+                        <div class="text-xl font-bold text-orange-500 mb-1">45g</div>
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Carbs</div>
+                    </div>
+                    <div class="flex-1 bg-white dark:bg-emerald-900/40 p-4 rounded-[20px] shadow-sm border border-stone-100 dark:border-white/5 relative overflow-hidden">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
+                        <div class="text-xl font-bold text-yellow-500 mb-1">12g</div>
+                        <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider">Fats</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ingredients -->
+            <section>
+                <div class="flex justify-between items-end mb-4">
+                    <h2 class="text-lg font-bold text-primary dark:text-white font-lexend">Ingredients</h2>
+                    <span class="text-xs font-bold text-secondary">1 Serving</span>
+                </div>
+                <div class="bg-white dark:bg-emerald-900/20 rounded-[24px] p-2 border border-stone-100 dark:border-white/5 shadow-sm">
+                    <div class="flex justify-between items-center p-4 hover:bg-stone-50 dark:hover:bg-white/5 rounded-2xl transition-colors border-b border-stone-50 dark:border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-emerald-200 dark:bg-emerald-700"></div>
+                            <span class="font-medium text-stone-700 dark:text-stone-200">Local Brown Rice</span>
+                        </div>
+                        <span class="text-sm font-bold text-primary dark:text-emerald-400">1/2 Derica</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 hover:bg-stone-50 dark:hover:bg-white/5 rounded-2xl transition-colors border-b border-stone-50 dark:border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-emerald-200 dark:bg-emerald-700"></div>
+                            <span class="font-medium text-stone-700 dark:text-stone-200">Chicken Breast</span>
+                        </div>
+                        <span class="text-sm font-bold text-primary dark:text-emerald-400">200g</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 hover:bg-stone-50 dark:hover:bg-white/5 rounded-2xl transition-colors border-b border-stone-50 dark:border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-emerald-200 dark:bg-emerald-700"></div>
+                            <span class="font-medium text-stone-700 dark:text-stone-200">Mixed Vegetables</span>
+                        </div>
+                        <span class="text-sm font-bold text-primary dark:text-emerald-400">1 Cup</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 hover:bg-stone-50 dark:hover:bg-white/5 rounded-2xl transition-colors border-b border-stone-50 dark:border-white/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-emerald-200 dark:bg-emerald-700"></div>
+                            <span class="font-medium text-stone-700 dark:text-stone-200">Olive Oil / Red Oil</span>
+                        </div>
+                        <span class="text-sm font-bold text-primary dark:text-emerald-400">1 Teaspoon</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 hover:bg-stone-50 dark:hover:bg-white/5 rounded-2xl transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-emerald-200 dark:bg-emerald-700"></div>
+                            <span class="font-medium text-stone-700 dark:text-stone-200">Jollof Spice Blend</span>
+                        </div>
+                        <span class="text-sm font-bold text-primary dark:text-emerald-400">To taste</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Instructions -->
+            <section>
+                <h2 class="text-lg font-bold text-primary dark:text-white mb-4 font-lexend">Instructions</h2>
+                <div class="space-y-4">
+                    <div class="flex gap-4 p-5 bg-white dark:bg-emerald-900/20 rounded-[24px] border border-stone-100 dark:border-white/5 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-emerald-100 dark:bg-emerald-800 group-hover:bg-secondary transition-colors"></div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-white/10 flex items-center justify-center font-bold text-primary dark:text-white text-sm">1</div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed pt-1">Parboil the brown rice for 15 minutes, then wash thoroughly to remove excess starch.</p>
+                    </div>
+                    <div class="flex gap-4 p-5 bg-white dark:bg-emerald-900/20 rounded-[24px] border border-stone-100 dark:border-white/5 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-emerald-100 dark:bg-emerald-800 group-hover:bg-secondary transition-colors"></div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-white/10 flex items-center justify-center font-bold text-primary dark:text-white text-sm">2</div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed pt-1">Grill or air-fry the chicken breast seasoned with Suya spice or your preferred local marinade.</p>
+                    </div>
+                    <div class="flex gap-4 p-5 bg-white dark:bg-emerald-900/20 rounded-[24px] border border-stone-100 dark:border-white/5 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-emerald-100 dark:bg-emerald-800 group-hover:bg-secondary transition-colors"></div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-white/10 flex items-center justify-center font-bold text-primary dark:text-white text-sm">3</div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed pt-1">In a pan, add 1 teaspoon of oil, fry onions, and add your blended pepper mix.</p>
+                    </div>
+                    <div class="flex gap-4 p-5 bg-white dark:bg-emerald-900/20 rounded-[24px] border border-stone-100 dark:border-white/5 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-emerald-100 dark:bg-emerald-800 group-hover:bg-secondary transition-colors"></div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-white/10 flex items-center justify-center font-bold text-primary dark:text-white text-sm">4</div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed pt-1">Add the parboiled rice, mixed vegetables, and just enough water to cook through.</p>
+                    </div>
+                    <div class="flex gap-4 p-5 bg-white dark:bg-emerald-900/20 rounded-[24px] border border-stone-100 dark:border-white/5 shadow-sm relative overflow-hidden group">
+                        <div class="absolute top-0 bottom-0 left-0 w-1 bg-emerald-100 dark:bg-emerald-800 group-hover:bg-secondary transition-colors"></div>
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 dark:bg-white/10 flex items-center justify-center font-bold text-primary dark:text-white text-sm">5</div>
+                        <p class="text-sm text-stone-600 dark:text-stone-300 leading-relaxed pt-1">Simmer on low heat until water dries up. Serve hot.</p>
+                    </div>
+                </div>
+            </section>
+
+            <button onclick="showToast('Meal successfully logged to Tracker!')" class="w-full bg-primary dark:bg-white text-white dark:text-primary py-5 rounded-[24px] font-bold shadow-xl shadow-primary/20 dark:shadow-white/10 active:scale-[0.98] transition-transform flex justify-center items-center gap-2">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">check_circle</span>
+                I've Cooked This
+            </button>
+        </main>
+    </div>
+    
+    <div id="market-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6">
+        <div class="absolute inset-0 bg-primary/40 dark:bg-black/60 backdrop-blur-sm" onclick="toggleMarketList(false)"></div>
+        <div class="relative w-full max-w-md bg-white dark:bg-emerald-950 rounded-[40px] shadow-2xl overflow-hidden border dark:border-emerald-800">
+            <div class="bg-secondary p-8 text-white">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-2xl font-bold">Market Memo</h3>
+                        <p class="text-orange-100/70 text-sm">Grouped by seller category</p>
+                    </div>
+                    <span class="material-symbols-outlined text-3xl cursor-pointer" onclick="toggleMarketList(false)">cancel</span>
+                </div>
+            </div>
+            <div class="p-8 space-y-6 max-h-[60vh] overflow-y-auto">
+                <div class="space-y-3">
+                    <p class="text-xs font-bold uppercase text-slate-400 dark:text-emerald-100/30">Grains & Swallows</p>
+                    <div class="flex justify-between items-center p-4 bg-slate-50 dark:bg-emerald-900/40 rounded-2xl">
+                        <span class="font-bold dark:text-white">Local Rice (Ofada)</span>
+                        <span class="text-secondary font-bold">2 Dericas</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-slate-50 dark:bg-emerald-900/40 rounded-2xl">
+                        <span class="font-bold dark:text-white">Honey Beans</span>
+                        <span class="text-secondary font-bold">1 Derica</span>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <p class="text-xs font-bold uppercase text-slate-400 dark:text-emerald-100/30">Protein</p>
+                    <div class="flex justify-between items-center p-4 bg-slate-50 dark:bg-emerald-900/40 rounded-2xl">
+                        <span class="font-bold dark:text-white">Chicken (Local)</span>
+                        <span class="text-secondary font-bold">Half Kilo</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-8 pt-0">
+                <button onclick="showToast('Sending Market Memo to WhatsApp...')" class="w-full bg-primary dark:bg-white text-white dark:text-primary py-4 rounded-full font-bold shadow-lg active:scale-95 transition-transform">Share Memo</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-primary text-white py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="text-xl font-bold">NaijaFit</div>
+            <p class="text-emerald-100/60 text-sm">© 2024 NaijaFit. No Shame, Just Progress.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
