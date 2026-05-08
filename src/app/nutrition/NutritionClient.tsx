@@ -16,7 +16,7 @@ export default function NutritionClient({ initialPantry }: { initialPantry: any[
     const newCount = currentCount + 1;
     try {
       await updatePantry(name, newCount, unit);
-      setPantry(prev => prev.map(item => item.name === name ? { ...item, count: newCount } : item));
+      setPantry((prev: any[]) => prev.map((item: any) => item.name === name ? { ...item, count: newCount } : item));
       showToast(`Added 1 ${unit} of ${name}`);
     } catch (e) {
       showToast("Error updating pantry.");

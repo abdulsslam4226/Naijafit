@@ -23,7 +23,7 @@ export default async function NutritionPage() {
     ];
     
     await prisma.pantryItem.createMany({
-      data: initialItems.map(item => ({
+      data: initialItems.map((item: any) => ({
         ...item,
         userId: session.user.id,
       })),

@@ -23,10 +23,10 @@ export default function MarketList() {
   ]);
 
   const toggleItem = (id: string) => {
-    setItems(items.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+    setItems(items.map((item: any) => item.id === id ? { ...item, checked: !item.checked } : item));
   };
 
-  const categories = Array.from(new Set(items.map(i => i.category)));
+  const categories = Array.from(new Set(items.map((i: any) => i.category)));
 
   return (
     <div className="w-full max-w-md mx-auto bg-white dark:bg-emerald-950 rounded-[40px] shadow-2xl overflow-hidden border border-emerald-50 dark:border-emerald-900">
@@ -49,7 +49,7 @@ export default function MarketList() {
               {cat}
             </h4>
             <div className="space-y-3">
-              {items.filter(i => i.category === cat).map((item) => (
+              {items.filter((i: any) => i.category === cat).map((item: any) => (
                 <div 
                   key={item.id} 
                   onClick={() => toggleItem(item.id)}

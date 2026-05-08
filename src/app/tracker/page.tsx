@@ -28,7 +28,7 @@ export default async function TrackerPage() {
     redirect("/onboarding");
   }
 
-  const hasMovedToday = user.progressLogs.some(log => log.moved);
+  const hasMovedToday = user.progressLogs.some((log: any) => log.moved);
 
   return (
     <TrackerClient 
