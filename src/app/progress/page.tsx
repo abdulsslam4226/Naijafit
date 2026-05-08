@@ -25,7 +25,7 @@ export default async function ProgressPage() {
     redirect("/onboarding");
   }
 
-  const currentWeight = user.progressLogs.find(log => log.weight !== null)?.weight || 0;
+  const currentWeight = user.progressLogs.find((log: any) => log.weight !== null)?.weight || 0;
   const targetWeight = user.targetWeight || 70.0;
 
   return (
