@@ -71,7 +71,7 @@ export default function WorkoutPage() {
 
         {/* Workout Whiteboard Section */}
         <div className="space-y-4">
-          {exercises.map((ex, i) => (
+          {exercises.map((ex: any, i: number) => (
             <div 
               key={i} 
               onClick={() => !ex.locked ? showToast(`Starting ${ex.name}`) : showToast("Unlock this exercise in Phase 2")}

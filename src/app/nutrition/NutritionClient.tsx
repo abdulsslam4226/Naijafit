@@ -163,7 +163,7 @@ export default function NutritionClient({ initialPantry }: { initialPantry: any[
             <p className="text-slate-500 dark:text-emerald-100/60 font-medium">Measurement without the stress.</p>
           </div>
           <div className="space-y-4">
-            {pantry.length > 0 ? pantry.map((item, i) => (
+            {pantry.length > 0 ? pantry.map((item: any, i: number) => (
               <div key={i} className="bg-white dark:bg-emerald-900 p-5 rounded-3xl flex justify-between items-center shadow-sm border border-stone-100 dark:border-emerald-800">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-emerald-800 flex items-center justify-center">

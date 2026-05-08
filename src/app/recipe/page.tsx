@@ -94,7 +94,7 @@ export default function RecipePage() {
         <section className="space-y-6">
           <h2 className="text-2xl font-bold text-primary dark:text-white font-lexend px-2">Nutrition Breakdown</h2>
           <div className="flex gap-4">
-            {macros.map((macro, i) => (
+            {macros.map((macro: any, i: number) => (
               <div key={i} className="flex-1 bg-white dark:bg-emerald-950 p-5 rounded-[32px] shadow-sm border border-stone-100 dark:border-emerald-900 text-center relative overflow-hidden group">
                 <div className={`absolute top-0 left-0 right-0 h-1 ${macro.bar} opacity-40`}></div>
                 <div className={`text-2xl font-bold ${macro.color} mb-1 font-lexend`}>{macro.value}</div>
@@ -111,7 +111,7 @@ export default function RecipePage() {
             <span className="text-xs font-bold text-secondary uppercase tracking-widest">1 Serving</span>
           </div>
           <div className="bg-white dark:bg-emerald-950 rounded-[40px] p-4 border border-stone-100 dark:border-emerald-900 shadow-sm">
-            {ingredients.map((item, i) => (
+            {ingredients.map((item: any, i: number) => (
               <div key={i} className={`flex justify-between items-center p-5 ${i !== ingredients.length - 1 ? 'border-b border-stone-50 dark:border-emerald-900' : ''}`}>
                 <div className="flex items-center gap-4">
                   <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
@@ -127,7 +127,7 @@ export default function RecipePage() {
         <section className="space-y-6">
           <h2 className="text-2xl font-bold text-primary dark:text-white font-lexend px-2">Instructions</h2>
           <div className="space-y-4">
-            {instructions.map((step, i) => (
+            {instructions.map((step: any, i: number) => (
               <div key={i} className="flex gap-6 p-6 bg-white dark:bg-emerald-950 rounded-[32px] border border-stone-100 dark:border-emerald-900 shadow-sm relative group transition-all hover:border-secondary/40">
                 <div className="flex-shrink-0 w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-900 flex items-center justify-center font-bold text-primary dark:text-emerald-400 font-lexend">
                   {i + 1}

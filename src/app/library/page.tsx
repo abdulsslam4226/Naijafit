@@ -55,7 +55,7 @@ export default function ExerciseLibraryPage() {
       <main className="max-w-md mx-auto px-6 mt-6 space-y-10">
         {/* Categories */}
         <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-          {categories.map((cat, i) => (
+          {categories.map((cat: any, i: number) => (
             <button 
               key={i} 
               onClick={() => showToast(`Filtering by ${cat}`)}
@@ -70,7 +70,7 @@ export default function ExerciseLibraryPage() {
         <div className="space-y-4">
           <p className="text-xs font-black text-slate-300 dark:text-emerald-100/10 uppercase tracking-widest px-2">{exercises.length} Results Found</p>
           
-          {exercises.map((ex, i) => (
+          {exercises.map((ex: any, i: number) => (
             <div 
               key={i} 
               onClick={() => showToast(`Opening ${ex.name} tutorial`)}

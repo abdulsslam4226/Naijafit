@@ -115,7 +115,7 @@ export default function TrackerClient({ initialStreak, hasMovedToday }: { initia
               { day: "F", upcoming: true },
               { day: "S", upcoming: true },
               { day: "S", upcoming: true },
-            ].map((d, i) => (
+            ].map((d: any, i: number) => (
               <div key={i} className={`flex flex-col items-center gap-2 ${d.upcoming ? "opacity-20" : ""}`}>
                 <span className={`text-xs font-bold ${d.done || d.current ? "opacity-40" : ""}`}>{d.day}</span>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center ${

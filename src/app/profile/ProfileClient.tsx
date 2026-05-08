@@ -77,7 +77,7 @@ export default function ProfileClient({ user }: { user: any }) {
             <button onClick={() => showToast("Opening Achievement Gallery")} className="text-secondary text-sm font-bold">View All</button>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
-            {achievements.map((item, i) => (
+            {achievements.map((item: any, i: number) => (
               <div key={i} className="min-w-[140px] bg-white dark:bg-emerald-950 p-6 rounded-[32px] shadow-sm border border-stone-100 dark:border-emerald-900 text-center transition-all hover:scale-105 active:scale-95 cursor-pointer">
                 <div className="text-3xl mb-2">{item.icon}</div>
                 <div className="text-xs font-bold text-primary dark:text-white mb-1 font-lexend">{item.name}</div>
@@ -89,7 +89,7 @@ export default function ProfileClient({ user }: { user: any }) {
 
         {/* Menu Items */}
         <section className="bg-white dark:bg-emerald-950 rounded-[40px] overflow-hidden shadow-sm border border-stone-100 dark:border-emerald-900">
-          {menuItems.map((item, i) => (
+          {menuItems.map((item: any, i: number) => (
             <button 
               key={i} 
               onClick={() => showToast(`Opening ${item.name}`)}

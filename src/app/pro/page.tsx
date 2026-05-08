@@ -63,7 +63,7 @@ export default function ProPage() {
             </div>
 
             <div className="space-y-6 mb-12">
-              {benefits.map((benefit, i) => (
+              {benefits.map((benefit: any, i: number) => (
                 <div key={i} className="flex gap-4">
                   <div className="w-6 h-6 rounded-lg bg-secondary/10 flex items-center justify-center flex-shrink-0">
                     <span className="material-symbols-outlined text-secondary text-sm">check</span>

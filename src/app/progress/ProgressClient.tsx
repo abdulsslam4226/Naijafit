@@ -73,7 +73,7 @@ export default function ProgressClient({ initialWeight, targetWeight, streak, re
           </div>
           
           <div className="flex justify-between items-end h-40 mb-4 px-2">
-            {weeklyStats.map((stat, i) => (
+            {weeklyStats.map((stat: any, i: number) => (
               <div key={i} className="flex flex-col items-center gap-4">
                 <div 
                   onClick={() => stat.active && showToast(`Activity on ${stat.day}: 45 mins`)}
